@@ -8,7 +8,8 @@ configurabili, con correzione termica). Solo HTML/CSS/JS vanilla, dati [Open-Met
 🔗 **App online (PWA):** https://gvasta62.github.io/meteo-app/
 
 > Documentazione dettagliata in [`docs/DOCUMENTAZIONE.md`](docs/DOCUMENTAZIONE.md);
-> piano e decisioni in [`docs/PIANO.md`](docs/PIANO.md).
+> piano e decisioni in [`docs/PIANO.md`](docs/PIANO.md);
+> storico delle versioni in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Caratteristiche
 
@@ -87,6 +88,8 @@ Meteo-app/
 ├── docs/                     # DOCUMENTAZIONE.md + PIANO.md
 ├── .github/workflows/        # deploy automatico su GitHub Pages
 ├── build_icons.py            # rigenerazione icone PWA (Pillow)
+├── CHANGELOG.md              # storico delle versioni
+├── LICENSE                   # MIT
 ├── README.md
 └── CLAUDE.md
 ```
