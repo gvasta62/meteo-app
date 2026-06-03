@@ -9,3 +9,12 @@ __pycache__/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Android/TWA — NON pubblicare chiavi di firma né artefatti di build
+android/*.keystore
+android/*.jks
+android/*.apk
+android/*.aab
+android/build/
+android/.gradle/
+android/local.properties

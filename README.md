@@ -77,8 +77,12 @@ Android segnala le app con `targetSdk` vecchio. Per una PWA il `targetSdk` lo im
 *minting server* di Google (non il manifest): il progetto è reso **pienamente conforme**
 (manifest con `id`/`screenshots`, icone 192/512+maskable, service worker, CSP) così Chrome
 conia un WebAPK moderno. Se l'avviso resta, **aggiorna Chrome / Android System WebView /
-Google Play Services**, poi **disinstalla e reinstalla** la PWA da Chrome. Dettagli in
-[`docs/DOCUMENTAZIONE.md`](docs/DOCUMENTAZIONE.md#sicurezza-e-installabilità-avviso-android-16).
+Google Play Services**, poi **disinstalla e reinstalla** la PWA da Chrome.
+
+**Soluzione definitiva** (nessun avviso): impacchettare la PWA in una **TWA** (vero APK con
+`targetSdk 35`). Progetto già pronto in [`android/twa-manifest.json`](android/twa-manifest.json);
+istruzioni passo-passo (PWABuilder o Bubblewrap) in
+[`docs/BUILD-ANDROID.md`](docs/BUILD-ANDROID.md).
 
 ## Struttura del progetto
 

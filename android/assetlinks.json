@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.gvasta62.meteoapp",
+      "sha256_cert_fingerprints": [
+        "94:D6:D1:39:E0:AC:EA:38:10:90:A9:F8:96:D1:72:BE:FA:BC:A0:6F:C3:54:14:5D:3F:95:07:8B:27:8C:1D:D1"
+      ]
+    }
+  }
+]
