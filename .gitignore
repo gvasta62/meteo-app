@@ -18,3 +18,6 @@ android/*.aab
 android/build/
 android/.gradle/
 android/local.properties
+
+# Pacchetto Android generato (APK/AAB + keystore + password): segreti e binari, fuori dal repo
+dist/

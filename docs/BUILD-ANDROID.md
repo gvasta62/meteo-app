@@ -19,11 +19,25 @@ Parametri del pacchetto:
 | `minSdk` | 21 |
 | URL caricato | https://gvasta62.github.io/meteo-app/ |
 
-Chiave di firma: [`android/android.keystore`](../android/) (alias `android`).
-**SHA-256:** `94:D6:D1:39:E0:AC:EA:38:10:90:A9:F8:96:D1:72:BE:FA:BC:A0:6F:C3:54:14:5D:3F:95:07:8B:27:8C:1D:D1`
+## ✅ APK già generato (PWABuilder)
 
-> La keystore e le sue password vanno tenute **riservate** (non sono nel repository).
-> Password usate in fase di setup: store/key = `meteoapp2026` (cambiale se vuoi rigenerare la chiave).
+L'APK è stato generato con PWABuilder e si trova in **`dist/Meteo.apk`** (cartella locale,
+esclusa dal repository). Verificato: `targetSdkVersion 35` → su Android 16 **nessun avviso
+Play Protect**.
+
+Contenuto di `dist/`:
+- `Meteo.apk` — da installare sul telefono (sideload)
+- `Meteo.aab` — per un'eventuale pubblicazione sul Google Play Store
+- `signing.keystore` + `signing-key-info.txt` — **chiave di firma e password: tenere riservate!**
+- `assetlinks.json` — Digital Asset Links con l'impronta di questa chiave
+
+Chiave effettivamente usata dall'APK (PWABuilder), **SHA-256**:
+`36:2E:56:1E:5A:F1:D7:A7:D7:AD:DF:76:C6:0B:0F:C8:63:62:D5:B8:45:E4:16:57:32:1D:4B:9E:98:72:FA:B4`
+→ è questa l'impronta in [`android/assetlinks.json`](../android/assetlinks.json).
+
+> Esiste anche una keystore locale di prova (`android/android.keystore`, alias `android`,
+> pass `meteoapp2026`, SHA-256 `94:D6:…:1D:D1`) creata durante i test: **non** è quella
+> dell'APK consegnato. Usa quella di PWABuilder (`dist/signing.keystore`) per le versioni future.
 
 ---
 
