@@ -4,7 +4,7 @@
 //  - chiamate alle API Open-Meteo (origine diversa): solo rete (servono dati freschi).
 // Per pubblicare nuove versioni dei file basta incrementare CACHE.
 
-const CACHE = "meteo-app-v2";
+const CACHE = "meteo-app-v3";
 const ASSETS = [
   "./",
   "./index.html",

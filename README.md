@@ -65,9 +65,15 @@ python3 -m http.server 8000
 ## Installazione sullo smartphone (PWA)
 
 1. Apri l'app online: **https://gvasta62.github.io/meteo-app/**
-2. Tocca il bottone in-app **«📲 Installa l'app sul telefono»** (Android/Chrome).
-3. In alternativa — **Android/Chrome**: menu ⋮ → *Installa app*; **iOS/Safari**:
-   *Condividi* → *Aggiungi a Home*.
+2. **Android**: tocca **«📥 Scarica l'app (APK)»** → si scarica l'APK firmato
+   ([release](https://github.com/gvasta62/meteo-app/releases/latest)); aprilo e conferma
+   l'installazione (sideload). Avendo `targetSdk 35` **non** compare l'avviso Play Protect
+   "versione precedente di Android".
+3. **Desktop (Chrome/Edge)**: tocca **«📲 Installa l'app»** quando compare, oppure menu ⋮ →
+   *Installa app*. **iOS/Safari**: *Condividi* → *Aggiungi a Home*.
+
+> Nota: nessuna pagina web può installare un APK da sola — su Android il download è
+> automatico, ma l'installazione richiede sempre la conferma dell'utente.
 
 L'app shell funziona anche offline; i dati meteo richiedono la rete.
 

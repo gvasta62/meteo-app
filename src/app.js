@@ -368,18 +368,33 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// Prompt d'installazione in-app (Android/Chrome). Su iOS l'evento non esiste:
-// il bottone resta nascosto e l'utente usa "Condividi → Aggiungi a Home".
+// Bottone d'installazione.
+// - Su Android: scarica l'APK firmato (TWA, targetSdk recente → niente avviso Play Protect).
+//   La pagina può avviare il download, ma l'installazione la conferma l'utente (regola di Android).
+// - Su desktop: installazione PWA quando il browser lo consente (beforeinstallprompt).
+// - Su iOS: l'evento non esiste, il bottone resta nascosto (usare "Condividi → Aggiungi a Home").
 const btnInstalla = document.getElementById("btn-installa");
-let eventoInstall = null;
+const APK_URL =
+  "https://github.com/gvasta62/meteo-app/releases/latest/download/Meteo.apk";
+const isAndroid = /Android/i.test(navigator.userAgent);
 
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault(); // evita il mini-infobar automatico: lo gestiamo noi
-  eventoInstall = e;
-  if (btnInstalla) btnInstalla.hidden = false;
-});
+if (isAndroid && btnInstalla) {
+  // Android: offri subito il download dell'APK
+  btnInstalla.textContent = "📥 Scarica l'app (APK)";
+  btnInstalla.hidden = false;
+  btnInstalla.addEventListener("click", () => {
+    window.location.href = APK_URL; // avvia il download dell'APK firmato
+  });
+} else if (btnInstalla) {
+  // Desktop (Chrome/Edge): installazione PWA tramite beforeinstallprompt
+  let eventoInstall = null;
 
-if (btnInstalla) {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault(); // evita il mini-infobar automatico: lo gestiamo noi
+    eventoInstall = e;
+    btnInstalla.hidden = false;
+  });
+
   btnInstalla.addEventListener("click", async () => {
     if (!eventoInstall) return;
     eventoInstall.prompt();
@@ -390,13 +405,12 @@ if (btnInstalla) {
       btnInstalla.hidden = true;
     }
   });
-}
 
-// Ad installazione avvenuta, nascondi il bottone.
-window.addEventListener("appinstalled", () => {
-  eventoInstall = null;
-  if (btnInstalla) btnInstalla.hidden = true;
-});
+  window.addEventListener("appinstalled", () => {
+    eventoInstall = null;
+    btnInstalla.hidden = true;
+  });
+}
 
 // --- Avvio ---
 // Ripristina la potenza salvata (se presente), altrimenti resta il default 900.
