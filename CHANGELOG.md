@@ -7,6 +7,25 @@ versionamento [SemVer](https://semver.org/lang/it/).
 > Nota: il progetto è nato come **progetto guidato** e tutte le versioni qui elencate
 > sono state sviluppate il **2026-06-03** in iterazioni successive.
 
+## [1.0.0] — 2026-06-03 — App Android (TWA) come APK scaricabile
+
+### Aggiunto
+- **GitHub Release `v1.0.0`** con **`Meteo.apk`** (TWA, `targetSdk 35`, verificato con `aapt`):
+  su Android 16 **nessun avviso Play Protect** "versione precedente di Android".
+- Progetto TWA in [`android/twa-manifest.json`](android/twa-manifest.json) e
+  [`android/assetlinks.json`](android/assetlinks.json); guida [`docs/BUILD-ANDROID.md`](docs/BUILD-ANDROID.md).
+- Il bottone in-app **rileva la piattaforma**: su Android diventa **«📥 Scarica l'app (APK)»**
+  e scarica l'APK dalla release; su desktop resta l'installazione PWA.
+
+### Modificato
+- `sw.js`: cache `meteo-app-v3`.
+
+### Note
+- Una pagina web può avviare il **download** dell'APK ma non installarlo: l'installazione
+  (sideload) richiede la conferma dell'utente. L'apertura **a schermo intero** della TWA
+  (senza barra indirizzo) richiede di pubblicare `assetlinks.json` alla radice del dominio
+  (`gvasta62.github.io`) — passo opzionale non ancora eseguito.
+
 ## [0.6.0] — 2026-06-03 — PWA installabile + conformità Android 15/16
 
 ### Aggiunto

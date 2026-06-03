@@ -47,20 +47,32 @@ come file statici.
 
 ```
 Meteo-app/
-├── src/
-│   ├── index.html              # struttura pagina + meta PWA + registrazione SW
+├── src/                        # PWA pubblicata su GitHub Pages
+│   ├── index.html              # struttura pagina + meta PWA + CSP
 │   ├── style.css               # stili (card, previsioni, controlli, safe-area)
-│   ├── app.js                  # logica: fetch, modello PV, rendering, localStorage
-│   ├── manifest.webmanifest    # manifest PWA (nome, icone, colori, display)
+│   ├── app.js                  # logica: fetch, modello PV, rendering, localStorage, SW, install
+│   ├── manifest.webmanifest    # manifest PWA "ricco" (id, icone, screenshots, display_override)
 │   ├── sw.js                   # service worker (cache app shell, API solo rete)
-│   └── icons/                  # icone PWA (192, 512, maskable, apple-touch, favicon)
+│   ├── icons/                  # icone PWA (192, 512, maskable, apple-touch, favicon)
+│   └── screenshots/            # screenshot per il manifest (narrow + wide)
+├── android/                    # impacchettamento TWA (vero APK)
+│   ├── twa-manifest.json       # config TWA (package, compileSdk 36, targetSdk 35)
+│   └── assetlinks.json         # Digital Asset Links (SHA-256 della chiave dell'APK)
 ├── docs/
 │   ├── PIANO.md                # piano di sviluppo e decisioni
-│   └── DOCUMENTAZIONE.md       # questo documento
-├── build_icons.py             # script PIL per (ri)generare le icone
+│   ├── DOCUMENTAZIONE.md       # questo documento
+│   └── BUILD-ANDROID.md        # come generare/distribuire l'APK
+├── .github/workflows/          # deploy automatico su GitHub Pages
+├── build_icons.py              # script PIL per (ri)generare le icone
+├── CHANGELOG.md                # storico versioni (0.1.0 → 0.6.0)
+├── LICENSE                     # MIT
 ├── README.md
 └── CLAUDE.md                   # istruzioni per Claude Code
 ```
+
+> Non versionati (in `.gitignore`): `dist/` (APK/AAB + keystore + password, generati da
+> PWABuilder), `android/android.keystore` (chiave di test), screenshot di prova. L'APK
+> distribuibile è pubblicato come **GitHub Release** (`Meteo.apk`).
 
 ---
 
@@ -169,42 +181,54 @@ Componenti:
 - `sw.js`: service worker; **cache-first** per i file locali, **solo rete** per le API.
 - meta tag in `index.html`: `theme-color`, `apple-touch-icon`, `apple-mobile-web-app-*`.
 
-### Come installarla
-1. Apri l'URL dell'app nel browser del telefono (serve **HTTPS** — es. GitHub Pages).
-2. In-app compare il bottone **«📲 Installa l'app sul telefono»** (solo Android/Chrome,
-   quando i criteri di installabilità sono soddisfatti): toccalo e conferma.
-3. In alternativa, **Android/Chrome**: menu ⋮ → *Installa app*; **iOS/Safari**:
-   *Condividi* → *Aggiungi a Home* (su iOS il bottone in-app non compare, è normale).
+### Come installarla (comportamento attuale del bottone)
 
-Il prompt in-app è gestito intercettando l'evento `beforeinstallprompt` (vedi `app.js`):
-il banner automatico del browser viene soppresso e mostriamo un bottone esplicito.
+L'app rileva la piattaforma (`navigator.userAgent`) e adatta il bottone:
+
+- **Android** → bottone **«📥 Scarica l'app (APK)»**: al clic scarica l'**APK firmato**
+  dalla release GitHub (`releases/latest/download/Meteo.apk`). L'utente apre il file e
+  conferma l'installazione (sideload). Avendo `targetSdk 35`, **non** compare l'avviso
+  Play Protect "versione precedente di Android".
+- **Desktop (Chrome/Edge)** → bottone **«📲 Installa l'app»**: appare quando scatta
+  `beforeinstallprompt` e installa la PWA.
+- **iOS/Safari** → il bottone non compare (l'evento non esiste): *Condividi → Aggiungi a Home*.
+
+> Limite di sicurezza Android: una pagina web può **avviare il download** di un APK ma
+> **non** può installarlo da sola — l'installazione richiede sempre la conferma dell'utente
+> e, la prima volta, il permesso "installa app da questa origine".
 
 > Nota: in locale la PWA è pienamente funzionante solo via `http://localhost` o `https://`.
 > Aprendo il file con `file://` il service worker non si registra (è normale).
 
-### Sicurezza e installabilità (avviso "Android 16")
+### L'avviso "Android 16" e perché abbiamo scelto la TWA
 
-Su Android 15/16 il sistema **segnala o blocca le app con `targetSdk` troppo vecchio**
-(minimo API 24). Quando si installa una PWA, Android crea un **WebAPK** tramite il
-*minting server* di Google: il `targetSdk` del WebAPK **non è impostabile dal manifest**,
-lo decide Chrome/Google Play Services. Se però la PWA **non soddisfa pienamente** i criteri
-di installabilità, Chrome ripiega su un'installazione "degradata" che può far comparire
-l'avviso di sicurezza.
+Su Android 15/16 il sistema **segnala le app con `targetSdk` troppo vecchio** (l'avviso
+scatta quando è più di 2 versioni sotto l'API del dispositivo). Quando si installa una PWA,
+Android crea un **WebAPK** il cui `targetSdk` è deciso dal *minting server* di Google
+(**non** dal manifest): per questo l'hardening della PWA (manifest ricco, CSP, icone…)
+**non basta** a cambiare quel numero, e su alcuni dispositivi l'avviso resta.
 
-Per massimizzare la conformità e far coniare a Chrome un **WebAPK completo e moderno**, il
-progetto adotta:
-- manifest "ricco": `id`, `name`/`short_name`, `description`, `categories`, `display`
-  `standalone` + `display_override`, icone **192 e 512 PNG** (+ maskable), **screenshots**
-  per `narrow` e `wide`;
-- servizio su **HTTPS** con **service worker** dotato di gestore `fetch`;
-- **Content-Security-Policy** restrittiva (solo risorse locali + API Open-Meteo), nessuno
-  script inline.
+**Soluzione definitiva adottata:** impacchettare la PWA in una **Trusted Web Activity (TWA)**
+— un vero APK con `targetSdk 35` — distribuito come release. Così l'avviso non compare.
 
-Se l'avviso persiste sul dispositivo, è il lato **OS/Chrome** a doversi aggiornare:
-aggiornare **Chrome**, **Android System WebView** e **Google Play Services**, poi
-**disinstallare e reinstallare** la PWA per rigenerare il WebAPK con un `targetSdk` recente.
-Conviene inoltre installare **da Chrome** (alcuni browser OEM producono installazioni meno
-conformi).
+- Configurazione TWA: [`android/twa-manifest.json`](../android/twa-manifest.json)
+  (package `io.github.gvasta62.meteoapp`, `compileSdk 36`, `targetSdk 35`).
+- APK generato con **PWABuilder** e pubblicato come **GitHub Release `v1.0.0`**
+  (`Meteo.apk`), verificato con `aapt` (`targetSdkVersion 35`).
+- Guida completa (PWABuilder e Bubblewrap) in [`docs/BUILD-ANDROID.md`](BUILD-ANDROID.md).
+
+L'hardening PWA resta comunque applicato (manifest `id`/`screenshots`/`display_override`,
+icone 192/512+maskable, service worker con `fetch`, **CSP** restrittiva, nessuno script
+inline): migliora sicurezza, qualità dell'install e affidabilità del WebAPK su desktop.
+
+### Aprire l'APK a schermo intero (opzionale)
+
+Una TWA mostra una sottile barra dell'indirizzo finché il dominio non è verificato con i
+**Digital Asset Links**. Per rimuoverla va pubblicato
+`https://gvasta62.github.io/.well-known/assetlinks.json` (contenuto pronto in
+[`android/assetlinks.json`](../android/assetlinks.json), con la SHA-256 della chiave
+dell'APK). ⚠️ Deve stare alla **radice del dominio** (repo `gvasta62.github.io`), non in
+questo repository. Senza, l'app funziona comunque e **non** mostra l'avviso Play Protect.
 
 Riferimenti: [Google Play target API level](https://developer.android.com/google/play/requirements/target-sdk),
 [Android 14 minimum SDK](https://bayton.org/android/android-14-minimum-sdk/),
