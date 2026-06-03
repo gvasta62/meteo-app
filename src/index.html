@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Meteo &amp; Fotovoltaico</title>
+  <meta name="description" content="Meteo e previsioni a 7 giorni con stima della produzione fotovoltaica giornaliera. Dati Open-Meteo, senza chiave API." />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#4facfe" />
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Meteo" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card">
+    <h1>🌤️ Meteo</h1>
+
+    <!-- Form di ricerca: il submit funziona sia col bottone che con Invio -->
+    <form id="form-ricerca" class="ricerca">
+      <input
+        type="text"
+        id="input-citta"
+        placeholder="Cerca una città…"
+        autocomplete="off"
+        aria-label="Nome della città"
+      />
+      <button type="submit" id="btn-cerca">Cerca</button>
+    </form>
+
+    <!-- Configurazione del pannello per la stima fotovoltaica -->
+    <div class="pannello-config">
+      <label>
+        Potenza
+        <span class="campo-num">
+          <input type="number" id="potenza" min="1" step="50" value="900" />W
+        </span>
+      </label>
+      <label>
+        Inclinazione
+        <span class="campo-num">
+          <input type="number" id="tilt" min="0" max="90" step="5" value="30" />°
+        </span>
+      </label>
+      <label>
+        Orientamento
+        <select id="azimuth">
+          <option value="0" selected>Sud</option>
+          <option value="-45">Sud-Est</option>
+          <option value="-90">Est</option>
+          <option value="45">Sud-Ovest</option>
+          <option value="90">Ovest</option>
+          <option value="180">Nord</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Messaggi di stato: caricamento o errori -->
+    <p id="stato" class="stato" role="status"></p>
+
+    <!-- Area dove viene mostrato il risultato meteo -->
+    <section id="risultato" class="risultato" hidden>
+      <p id="luogo" class="luogo"></p>
+      <p class="riga-temp">
+        <span id="icona" class="icona"></span>
+        <span id="temperatura" class="temperatura"></span>
+      </p>
+      <p id="condizioni" class="condizioni"></p>
+      <ul class="dettagli">
+        <li>Percepita: <span id="percepita"></span></li>
+        <li>Umidità: <span id="umidita"></span></li>
+        <li>Vento: <span id="vento"></span></li>
+      </ul>
+    </section>
+
+    <!-- Previsioni a più giorni + stima produzione fotovoltaica -->
+    <section id="previsioni" class="previsioni" hidden>
+      <h2 class="titolo-sezione">Prossimi giorni</h2>
+      <div id="lista-giorni" class="lista-giorni"></div>
+      <p class="nota-pv" id="nota-pv">
+        ☀️ Stima produzione di un pannello da <strong>900&nbsp;Wp</strong>
+        (PR&nbsp;0,75 — valore indicativo).
+      </p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    // Registra il service worker (abilita installazione e uso offline su smartphone)
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch((err) =>
+          console.error("Service worker non registrato:", err)
+        );
+      });
+    }
+  </script>
+</body>
+</html>

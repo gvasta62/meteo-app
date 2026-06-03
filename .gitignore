@@ -1,0 +1,11 @@
+# Screenshot di test (generati durante la verifica nel browser)
+src/meteo-*.png
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
