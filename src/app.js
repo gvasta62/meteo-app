@@ -357,6 +357,47 @@ form.addEventListener("submit", (e) => {
   cercaMeteo(inputCitta.value);
 });
 
+// --- PWA: service worker + prompt d'installazione ---
+
+// Registra il service worker (abilita installazione e uso offline su smartphone).
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .catch((err) => console.error("Service worker non registrato:", err));
+  });
+}
+
+// Prompt d'installazione in-app (Android/Chrome). Su iOS l'evento non esiste:
+// il bottone resta nascosto e l'utente usa "Condividi → Aggiungi a Home".
+const btnInstalla = document.getElementById("btn-installa");
+let eventoInstall = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault(); // evita il mini-infobar automatico: lo gestiamo noi
+  eventoInstall = e;
+  if (btnInstalla) btnInstalla.hidden = false;
+});
+
+if (btnInstalla) {
+  btnInstalla.addEventListener("click", async () => {
+    if (!eventoInstall) return;
+    eventoInstall.prompt();
+    try {
+      await eventoInstall.userChoice; // attende la scelta dell'utente
+    } finally {
+      eventoInstall = null; // il prompt è usa-e-getta
+      btnInstalla.hidden = true;
+    }
+  });
+}
+
+// Ad installazione avvenuta, nascondi il bottone.
+window.addEventListener("appinstalled", () => {
+  eventoInstall = null;
+  if (btnInstalla) btnInstalla.hidden = true;
+});
+
 // --- Avvio ---
 // Ripristina la potenza salvata (se presente), altrimenti resta il default 900.
 const potenzaSalvata = localStorage.getItem(KEY_POTENZA);

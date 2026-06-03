@@ -1,11 +1,15 @@
 {
+  "id": "/meteo-app/",
   "name": "Meteo & Fotovoltaico",
   "short_name": "Meteo",
   "description": "Meteo attuale e previsioni a 7 giorni di una città, con stima della produzione fotovoltaica giornaliera (potenza, inclinazione e orientamento configurabili, correzione termica). Dati Open-Meteo, senza chiave API.",
   "lang": "it",
+  "dir": "ltr",
+  "categories": ["weather", "utilities", "productivity"],
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#4facfe",
   "theme_color": "#4facfe",
@@ -27,6 +31,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/app-mobile.png",
+      "sizes": "412x915",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Meteo e stima fotovoltaica su smartphone"
+    },
+    {
+      "src": "screenshots/app-wide.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Meteo e stima fotovoltaica su desktop"
     }
   ]
 }

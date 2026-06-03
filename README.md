@@ -64,10 +64,20 @@ python3 -m http.server 8000
 ## Installazione sullo smartphone (PWA)
 
 1. Apri l'app online: **https://gvasta62.github.io/meteo-app/**
-2. **Android/Chrome**: menu ⋮ → *Installa app* / *Aggiungi a schermata Home*.
-3. **iOS/Safari**: *Condividi* → *Aggiungi a Home*.
+2. Tocca il bottone in-app **«📲 Installa l'app sul telefono»** (Android/Chrome).
+3. In alternativa — **Android/Chrome**: menu ⋮ → *Installa app*; **iOS/Safari**:
+   *Condividi* → *Aggiungi a Home*.
 
 L'app shell funziona anche offline; i dati meteo richiedono la rete.
+
+### Avviso di sicurezza su Android 15/16
+
+Android segnala le app con `targetSdk` vecchio. Per una PWA il `targetSdk` lo imposta il
+*minting server* di Google (non il manifest): il progetto è reso **pienamente conforme**
+(manifest con `id`/`screenshots`, icone 192/512+maskable, service worker, CSP) così Chrome
+conia un WebAPK moderno. Se l'avviso resta, **aggiorna Chrome / Android System WebView /
+Google Play Services**, poi **disinstalla e reinstalla** la PWA da Chrome. Dettagli in
+[`docs/DOCUMENTAZIONE.md`](docs/DOCUMENTAZIONE.md#sicurezza-e-installabilità-avviso-android-16).
 
 ## Struttura del progetto
 

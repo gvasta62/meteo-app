@@ -2,6 +2,8 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
+  <!-- Content Security Policy: consenti solo risorse locali + le API meteo Open-Meteo -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.open-meteo.com https://geocoding-api.open-meteo.com; img-src 'self'; style-src 'self'; script-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Meteo &amp; Fotovoltaico</title>
   <meta name="description" content="Meteo e previsioni a 7 giorni con stima della produzione fotovoltaica giornaliera. Dati Open-Meteo, senza chiave API." />
@@ -33,6 +35,11 @@
       />
       <button type="submit" id="btn-cerca">Cerca</button>
     </form>
+
+    <!-- Bottone d'installazione: compare solo quando il browser lo consente (beforeinstallprompt) -->
+    <button id="btn-installa" class="btn-installa" type="button" hidden>
+      📲 Installa l'app sul telefono
+    </button>
 
     <!-- Configurazione del pannello per la stima fotovoltaica -->
     <div class="pannello-config">
@@ -91,15 +98,5 @@
   </main>
 
   <script src="app.js"></script>
-  <script>
-    // Registra il service worker (abilita installazione e uso offline su smartphone)
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("sw.js").catch((err) =>
-          console.error("Service worker non registrato:", err)
-        );
-      });
-    }
-  </script>
 </body>
 </html>

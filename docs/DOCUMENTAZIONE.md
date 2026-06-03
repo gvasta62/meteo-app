@@ -171,11 +171,44 @@ Componenti:
 
 ### Come installarla
 1. Apri l'URL dell'app nel browser del telefono (serve **HTTPS** — es. GitHub Pages).
-2. **Android/Chrome**: menu ⋮ → *Installa app* / *Aggiungi a schermata Home*.
-3. **iOS/Safari**: pulsante *Condividi* → *Aggiungi a Home*.
+2. In-app compare il bottone **«📲 Installa l'app sul telefono»** (solo Android/Chrome,
+   quando i criteri di installabilità sono soddisfatti): toccalo e conferma.
+3. In alternativa, **Android/Chrome**: menu ⋮ → *Installa app*; **iOS/Safari**:
+   *Condividi* → *Aggiungi a Home* (su iOS il bottone in-app non compare, è normale).
+
+Il prompt in-app è gestito intercettando l'evento `beforeinstallprompt` (vedi `app.js`):
+il banner automatico del browser viene soppresso e mostriamo un bottone esplicito.
 
 > Nota: in locale la PWA è pienamente funzionante solo via `http://localhost` o `https://`.
 > Aprendo il file con `file://` il service worker non si registra (è normale).
+
+### Sicurezza e installabilità (avviso "Android 16")
+
+Su Android 15/16 il sistema **segnala o blocca le app con `targetSdk` troppo vecchio**
+(minimo API 24). Quando si installa una PWA, Android crea un **WebAPK** tramite il
+*minting server* di Google: il `targetSdk` del WebAPK **non è impostabile dal manifest**,
+lo decide Chrome/Google Play Services. Se però la PWA **non soddisfa pienamente** i criteri
+di installabilità, Chrome ripiega su un'installazione "degradata" che può far comparire
+l'avviso di sicurezza.
+
+Per massimizzare la conformità e far coniare a Chrome un **WebAPK completo e moderno**, il
+progetto adotta:
+- manifest "ricco": `id`, `name`/`short_name`, `description`, `categories`, `display`
+  `standalone` + `display_override`, icone **192 e 512 PNG** (+ maskable), **screenshots**
+  per `narrow` e `wide`;
+- servizio su **HTTPS** con **service worker** dotato di gestore `fetch`;
+- **Content-Security-Policy** restrittiva (solo risorse locali + API Open-Meteo), nessuno
+  script inline.
+
+Se l'avviso persiste sul dispositivo, è il lato **OS/Chrome** a doversi aggiornare:
+aggiornare **Chrome**, **Android System WebView** e **Google Play Services**, poi
+**disinstallare e reinstallare** la PWA per rigenerare il WebAPK con un `targetSdk` recente.
+Conviene inoltre installare **da Chrome** (alcuni browser OEM producono installazioni meno
+conformi).
+
+Riferimenti: [Google Play target API level](https://developer.android.com/google/play/requirements/target-sdk),
+[Android 14 minimum SDK](https://bayton.org/android/android-14-minimum-sdk/),
+[web.dev — installabilità](https://web.dev/articles/install-criteria).
 
 ---
 
